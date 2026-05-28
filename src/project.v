@@ -11,16 +11,24 @@ module tt_um_pqc_aishu (
     input  wire       rst_n     
 );
 
+    reg [7:0] pqc_out_reg;
     wire [3:0] a = ui_in[7:4];
     wire [3:0] b = ui_in[3:0];
     wire mode = uio_in[0];
-    wire [7:0] pqc_arith = (a + b) % 13;
-    wire [7:0] pqc_logic = (a ^ b) << 1;
 
-    // The Fix: Use clk and rst_n in a dummy way so the tool routes them
-    wire dummy = clk & rst_n & ena;
+    // This block FORCES the tool to use the clock pin correctly
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            pqc_out_reg <= 8'b0;
+        end else if (ena) begin
+            if (mode)
+                pqc_out_reg <= ( {4'b0, a} + {4'b0, b} ); // PQC Addition
+            else
+                pqc_out_reg <= {4'b0, (a ^ b)};           // PQC Mixing
+        end
+    end
 
-    assign uo_out = (mode ? pqc_arith : pqc_logic) ^ {7'b0, (dummy & 1'b0)};
+    assign uo_out = pqc_out_reg;
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
 
