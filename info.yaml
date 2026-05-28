@@ -27,6 +27,13 @@ pinout:
   uo[6]: "out_6"
   uo[7]: "out_7"
   uio[0]: "mode_sel"
+  uio[1]: "unused_1"
+  uio[2]: "unused_2"
+  uio[3]: "unused_3"
+  uio[4]: "unused_4"
+  uio[5]: "unused_5"
+  uio[6]: "unused_6"
+  uio[7]: "unused_7"
 
 how_it_works: "Implements modular addition and bitwise mixing for PQC acceleration."
 how_to_test:  "Set mode_sel high for addition, low for mixing; provide 4-bit operands."
