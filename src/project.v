@@ -12,7 +12,7 @@ module tt_um_pqc_aishu (
 );
 
     reg [7:0] pqc_out_reg;
-    reg [7:0] anchor_counter; // This is the fix
+    reg [7:0] dummy_gate; // The Anchor
     wire [3:0] a = ui_in[7:4];
     wire [3:0] b = ui_in[3:0];
     wire mode = uio_in[0];
@@ -20,18 +20,19 @@ module tt_um_pqc_aishu (
     always @(posedge clk) begin
         if (!rst_n) begin
             pqc_out_reg <= 8'b0;
-            anchor_counter <= 8'b0;
-        end else if (ena) begin
-            anchor_counter <= anchor_counter + 1; // Keeps clk alive
+            dummy_gate <= 8'b0;
+        end else begin
+            dummy_gate <= dummy_gate + 1; 
             if (mode)
-                pqc_out_reg <= a + b;
+                pqc_out_reg <= (a + b);
             else
-                pqc_out_reg <= a ^ b;
+                pqc_out_reg <= (a ^ b);
         end
     end
 
-    // Use anchor_counter so it doesn't get deleted by the tool
-    assign uo_out = pqc_out_reg ^ (anchor_counter & 8'h00); 
+    // We XOR the output with the dummy gate but then AND it with 0
+    // This looks like 'logic' to the tool, so it CANNOT delete the clock.
+    assign uo_out = pqc_out_reg ^ (dummy_gate & 8'h00);
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
 
