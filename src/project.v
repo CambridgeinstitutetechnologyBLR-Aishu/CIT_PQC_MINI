@@ -16,15 +16,14 @@ module tt_um_pqc_aishu (
     wire [3:0] b = ui_in[3:0];
     wire mode = uio_in[0];
 
-    // This block FORCES the tool to use the clock pin correctly
     always @(posedge clk) begin
         if (!rst_n) begin
             pqc_out_reg <= 8'b0;
         end else if (ena) begin
             if (mode)
-                pqc_out_reg <= ( {4'b0, a} + {4'b0, b} ); // PQC Addition
+                pqc_out_reg <= a + b; // Standard PQC Adder
             else
-                pqc_out_reg <= {4'b0, (a ^ b)};           // PQC Mixing
+                pqc_out_reg <= a ^ b; // PQC Mixer
         end
     end
 
